@@ -1,1 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antonio TOUDJI — AI Red Teamer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080b10;
+    --surface: #0d1117;
+    --border: #1a2332;
+    --accent: #00ff88;
+    --accent2: #ff3c5c;
+    --accent3: #0af;
+    --text: #e6edf3;
+    --muted: #7d8590;
+  }
 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* GRID BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* SCANLINE */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.15) 2px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* NAV */
+  nav {
+    padding: 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    padding: 100px 0 80px;
+    position: relative;
+  }
+
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero h1 {
+    font-size: clamp(48px, 8vw, 88px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -3px;
+    margin-bottom: 32px;
+  }
+
+  .hero h1 .line1 { display: block; color: var(--text); }
+  .hero h1 .line2 {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--accent);
+  }
+  .hero h1 .line3 { display: block; color: var(--accent2); }
+
+  .hero-desc {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 500px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  .hero-desc span { color: var(--text); }
+
+  .hero-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    padding: 14px 28px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-decoration: none;
+    transition: all 0.2s;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+
+  .btn-primary:hover {
+    background: #fff;
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 14px 28px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* STATS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin: 80px 0;
+  }
+
+  .stat {
+    background: var(--bg);
+    padding: 32px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  /* SECTION */
+  .section {
+    padding: 80px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+
+  .section-title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+
+  /* SKILLS GRID */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .skill-tag {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .skill-tag::before {
+    content: '›';
+    color: var(--accent);
+    font-size: 16px;
+  }
+
+  .skill-tag:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* WRITEUPS TABLE */
+  .writeups-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .writeups-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+  }
+
+  .writeups-table td {
+    padding: 20px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .writeups-table tr:hover td { background: var(--surface); }
+
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  .tag-green { background: rgba(0,255,136,0.1); color: var(--accent); }
+  .tag-red { background: rgba(255,60,92,0.1); color: var(--accent2); }
+  .tag-blue { background: rgba(0,170,255,0.1); color: var(--accent3); }
+
+  .writeup-link {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.2s;
+  }
+
+  .writeup-link:hover { color: var(--accent); }
+
+  /* PROJECT CARD */
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+  }
+
+  .project-card:hover { border-color: var(--accent); }
+
+  .project-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+
+  .project-desc {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .project-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+
+  .project-link {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .project-link::after { content: '→'; }
+  .project-link:hover { color: #fff; }
+
+  /* OWASP */
+  .owasp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .owasp-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+
+  .owasp-item:hover { border-color: var(--accent2); }
+
+  .owasp-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    min-width: 50px;
+  }
+
+  .owasp-name {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .owasp-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* CONTACT */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .contact-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: block;
+  }
+
+  .contact-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .contact-platform {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .contact-value {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1em;
+    background: var(--accent);
+    margin-left: 4px;
+    vertical-align: middle;
+    animation: blink 1s infinite;
+  }
+
+  .hero, .stats, .section {
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .stats { animation-delay: 0.2s; }
+  .section:nth-of-type(1) { animation-delay: 0.3s; }
+  .section:nth-of-type(2) { animation-delay: 0.4s; }
+
+  /* TERMINAL BOX */
+  .terminal {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-bottom: 48px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+  }
+
+  .terminal-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #febc2e; }
+  .dot-green { background: #28c840; }
+
+  .terminal-line { color: var(--muted); line-height: 2; }
+  .terminal-line .prompt { color: var(--accent); }
+  .terminal-line .cmd { color: var(--text); }
+  .terminal-line .output { color: var(--accent3); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <nav>
+    <div class="logo">ANTONIO.TOUDJI<span class="cursor"></span></div>
+    <ul class="nav-links">
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#writeups">Write-ups</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">AI RED TEAMER</div>
+    <h1>
+      <span class="line1">I BREAK</span>
+      <span class="line2">AI SYSTEMS</span>
+      <span class="line3">BEFORE YOU DO.</span>
+    </h1>
+    <p class="hero-desc">
+      Specialized in <span>LLM red teaming</span>, prompt injection, and adversarial testing of AI agents.
+      OWASP GenAI contributor. I find the vulnerabilities before attackers exploit them.
+    </p>
+    <div class="hero-cta">
+      <a href="#writeups" class="btn-primary">VIEW WRITE-UPS</a>
+      <a href="#contact" class="btn-secondary">HIRE ME</a>
+    </div>
+  </section>
+
+  <!-- TERMINAL -->
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="dot dot-red"></div>
+      <div class="dot dot-yellow"></div>
+      <div class="dot dot-green"></div>
+    </div>
+    <div class="terminal-line"><span class="prompt">$ </span><span class="cmd">whoami</span></div>
+    <div class="terminal-line"><span class="output">Antonio TOUDJI — AI Security Engineer & Red Teamer</span></div>
+    <div class="terminal-line"><span class="prompt">$ </span><span class="cmd">cat specialization.txt</span></div>
+    <div class="terminal-line"><span class="output">Prompt Injection | Jailbreaks | LLM Adversarial Testing | OWASP GenAI</span></div>
+    <div class="terminal-line"><span class="prompt">$ </span><span class="cmd">cat status.txt</span></div>
+    <div class="terminal-line"><span class="output">🟢 Open for contracts & freelance projects</span></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">12</div>
+      <div class="stat-label">LLM Challenges</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">10</div>
+      <div class="stat-label">OWASP GenAI CVEs</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Models Attacked</div>
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <section class="section" id="skills">
+    <div class="section-header">
+      <span class="section-num">01 —</span>
+      <h2 class="section-title">Skills</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-tag">Prompt Injection</div>
+      <div class="skill-tag">Jailbreak Techniques</div>
+      <div class="skill-tag">Multimodal Attacks</div>
+      <div class="skill-tag">RAG Poisoning</div>
+      <div class="skill-tag">Agentic Systems</div>
+      <div class="skill-tag">Data Exfiltration</div>
+      <div class="skill-tag">OWASP GenAI Top 10</div>
+      <div class="skill-tag">Web Pentesting</div>
+      <div class="skill-tag">Burp Suite</div>
+      <div class="skill-tag">Linux Priv Esc</div>
+      <div class="skill-tag">Vuln Reporting</div>
+      <div class="skill-tag">API Security</div>
+    </div>
+  </section>
+
+  <!-- WRITE-UPS -->
+  <section class="section" id="writeups">
+    <div class="section-header">
+      <span class="section-num">02 —</span>
+      <h2 class="section-title">Write-ups</h2>
+    </div>
+    <table class="writeups-table">
+      <thead>
+        <tr>
+          <th>Challenge</th>
+          <th>Platform</th>
+          <th>Category</th>
+          <th>Difficulty</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="writeups/tryhackme/bankgpt.md" class="writeup-link">BankGPT</a></td>
+          <td><span class="tag tag-blue">TryHackMe</span></td>
+          <td>Prompt Injection</td>
+          <td><span class="tag tag-green">Easy</span></td>
+        </tr>
+        <tr>
+          <td><a href="writeups/projects/llm-security-challenge.md" class="writeup-link">LLM Security Challenge</a></td>
+          <td><span class="tag tag-green">Personal Lab</span></td>
+          <td>Prompt Injection</td>
+          <td><span class="tag tag-red">Easy → Hard</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="section" id="projects">
+    <div class="section-header">
+      <span class="section-num">03 —</span>
+      <h2 class="section-title">Projects</h2>
+    </div>
+    <div class="project-card">
+      <div class="project-title">LLM Security Challenge</div>
+      <p class="project-desc">
+        A gamified platform with 12 levels of increasing difficulty to master prompt injection techniques.
+        Each level represents an AI guardian with different defensive mechanisms — from naive to highly hardened models.
+      </p>
+      <div class="project-tags">
+        <span class="tag tag-green">Prompt Injection</span>
+        <span class="tag tag-blue">LLM Security</span>
+        <span class="tag tag-red">Red Teaming</span>
+      </div>
+      <a href="https://lnkd.in/d7e2j8H8" class="project-link" target="_blank">TRY THE CHALLENGE</a>
+    </div>
+  </section>
+
+  <!-- OWASP -->
+  <section class="section" id="owasp">
+    <div class="section-header">
+      <span class="section-num">04 —</span>
+      <h2 class="section-title">OWASP GenAI Focus</h2>
+    </div>
+    <div class="owasp-grid">
+      <div class="owasp-item">
+        <span class="owasp-num">LLM01</span>
+        <div>
+          <div class="owasp-name">Prompt Injection</div>
+          <div class="owasp-desc">Direct & indirect manipulation of model instructions</div>
+        </div>
+      </div>
+      <div class="owasp-item">
+        <span class="owasp-num">LLM02</span>
+        <div>
+          <div class="owasp-name">Insecure Output Handling</div>
+          <div class="owasp-desc">Unsafe downstream processing of LLM responses</div>
+        </div>
+      </div>
+      <div class="owasp-item">
+        <span class="owasp-num">LLM03</span>
+        <div>
+          <div class="owasp-name">Training Data Poisoning</div>
+          <div class="owasp-desc">Compromising model integrity via data manipulation</div>
+        </div>
+      </div>
+      <div class="owasp-item">
+        <span class="owasp-num">LLM06</span>
+        <div>
+          <div class="owasp-name">Sensitive Info Disclosure</div>
+          <div class="owasp-desc">Exfiltration of confidential data through model outputs</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact">
+    <div class="section-header">
+      <span class="section-num">05 —</span>
+      <h2 class="section-title">Contact</h2>
+    </div>
+    <div class="contact-grid">
+      <a href="https://linkedin.com/in/antonio-toudji" class="contact-card" target="_blank">
+        <div class="contact-platform">LINKEDIN</div>
+        <div class="contact-value">Antonio TOUDJI</div>
+      </a>
+      <a href="mailto:antonio.redteam@gmail.com" class="contact-card">
+        <div class="contact-platform">EMAIL</div>
+        <div class="contact-value">antonio.redteam@gmail.com</div>
+      </a>
+      <a href="https://github.com/Antohack879/AI-RedTeam-Portfolio" class="contact-card" target="_blank">
+        <div class="contact-platform">GITHUB</div>
+        <div class="contact-value">AI-RedTeam-Portfolio</div>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-text">© 2025 ANTONIO TOUDJI — AI RED TEAMER</div>
+    <div class="footer-text">BUILDING. BREAKING. SECURING AI.</div>
+  </footer>
+</div>
+
+</body>
+</html>
