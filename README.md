@@ -5,7 +5,7 @@ I break AI systems before attackers do.
 Specialized in LLM red teaming, prompt injection, and adversarial 
 testing of AI agents and generative models.
 
----
+--- 
 
 ## Skills
 - Prompt Injection (Direct & Indirect)
