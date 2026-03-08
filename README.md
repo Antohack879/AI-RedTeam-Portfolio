@@ -38,9 +38,10 @@ testing of AI agents and generative models.
 ---
 
 ## Reports
-Coming soon.
-
----
+## Reports
+| Report | Target | Severity | Download |
+|--------|--------|----------|----------|
+| AI Pentest Report | BankGPT | CRITICAL | [Download](reports/AI_Pentest_Report_BankGPT_AntonioTOUDJI.pdf) |
 
 ## Contact
 - LinkedIn: [Antonio TOUDJI](https://linkedin.com/in/antonio-toudji)
