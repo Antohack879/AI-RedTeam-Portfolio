@@ -52,5 +52,5 @@ Specialized in LLM red teaming, prompt injection, and adversarial testing of AI 
 ## Contact
 
 - LinkedIn: [Antonio TOUDJI](https://linkedin.com/in/antonio-toudji)
-- Email: antonio.redteam@gmail.com
+- Email: antonio.redteam1@gmail.com
 - GitHub: [Antohack879](https://github.com/Antohack879)
