@@ -48,7 +48,7 @@ I find critical vulnerabilities in AI chatbots, APIs, and agents before attacker
 
 | Target | Type | Write-Up |
 |--------|------|----------|
-| Vanguard Ops — Anna WhatsApp Bot | Production chatbot security audit | [Read](writeups/realworld/vanguard_ops_audit_fr.md) |
+| Confidential | Production chatbot security audit | [Read](writeups/realworld/vanguard_ops_audit_fr.md) |
 
 ### Personal Projects
 
