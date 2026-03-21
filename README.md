@@ -108,7 +108,7 @@ AI-RedTeam-Portfolio/
 │   ├── AI_Pentest_Report_LLMAPIExploit_EN_AntonioTOUDJI.pdf
 │   ├── AI_Pentest_Report_IndirectInjection_AntonioTOUDJI.pdf
 │   ├── AI_Pentest_Report_XSS_OutputHandling_AntonioTOUDJI.pdf  ← NEW
-│   └── AI_Audit_VanguardOps_Anna_AntonioTOUDJI.pdf  ← NEW
+│   └──
 └── index.html
 ```
 
